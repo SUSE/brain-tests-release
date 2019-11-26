@@ -1,6 +1,6 @@
 #!/bin/bash
 # This script uses the cf CLI to configure things like http proxies and security
-# groups for scf
+# groups for the CF cluster under test
 
 set -o errexit -o nounset
 
@@ -14,32 +14,32 @@ SILENT=
 <%
 require 'shellwords'
 env = {}
-if_p("scf_set_proxy.staging_http_proxy") do |val|
+if_p("cfcluster_set_proxy.staging_http_proxy") do |val|
    env["staging"] ||= {}
    env["staging"]["http_proxy"] = val
    env["staging"]["http_proxy".upcase] = val
 end
-if_p("scf_set_proxy.staging_https_proxy") do |val|
+if_p("cfcluster_set_proxy.staging_https_proxy") do |val|
    env["staging"] ||= {}
    env["staging"]["https_proxy"] = val
    env["staging"]["https_proxy".upcase] = val
 end
-if_p("scf_set_proxy.staging_no_proxy") do |val|
+if_p("cfcluster_set_proxy.staging_no_proxy") do |val|
    env["staging"] ||= {}
    env["staging"]["no_proxy"] = val
    env["staging"]["no_proxy".upcase] = val
 end
-if_p("scf_set_proxy.running_http_proxy") do |val|
+if_p("cfcluster_set_proxy.running_http_proxy") do |val|
    env["running"] ||= {}
    env["running"]["http_proxy"] = val
    env["running"]["http_proxy".upcase] = val
 end
-if_p("scf_set_proxy.running_https_proxy") do |val|
+if_p("cfcluster_set_proxy.running_https_proxy") do |val|
    env["running"] ||= {}
    env["running"]["https_proxy"] = val
    env["running"]["https_proxy".upcase] = val
 end
-if_p("scf_set_proxy.running_no_proxy") do |val|
+if_p("cfcluster_set_proxy.running_no_proxy") do |val|
    env["running"] ||= {}
    env["running"]["no_proxy"] = val
    env["running"]["no_proxy".upcase] = val
@@ -84,7 +84,7 @@ function retry () {
 CF_SKIP="<%= properties.ssl.skip_cert_verify ? '--skip-ssl-validation' : '' %>"
 CURL_SKIP="<%= properties.ssl.skip_cert_verify ? '--insecure' : '' %>"
 
-UAA_ENDPOINT="<%= p('scf.uaa.internal-url') %>"
+UAA_ENDPOINT="<%= p('cfcluster.uaa.internal-url') %>"
 API_ENDPOINT="<%= p('cf.insecure_api_url') %>"
 
 status "Waiting for CC ..."
@@ -130,30 +130,30 @@ status "Remove temporary users"
 remove_temporary_users.rb "${API_ENDPOINT}" "${CURL_SKIP}"
 
 
-<% if p("scf.eirini.enabled") %>
+<% if p("cfcluster.eirini.enabled") %>
 status "Configuring Eirini"
 
-scf_secrets="$(/var/vcap/packages/kubectl/bin/kubectl get secret "<%= p("scf.secrets_generation_name") %>" --namespace="$KUBERNETES_NAMESPACE" --export -o yaml | grep -E 'cc-.*|internal-ca-.*')"
+cfcluster_secrets="$(/var/vcap/packages/kubectl/bin/kubectl get secret "<%= p("cfcluster.secrets_generation_name") %>" --namespace="$KUBERNETES_NAMESPACE" --export -o yaml | grep -E 'cc-.*|internal-ca-.*')"
 cat <<EOT >> secret.yml
 ---
 apiVersion: v1
 kind: Secret
 metadata:
-  name: scf-credentials
+  name: cfcluster-credentials
 type: Opaque
 data:
-${scf_secrets}
+${cfcluster_secrets}
 EOT
-/var/vcap/packages/kubectl/bin/kubectl apply -f secret.yml --namespace "<%= p("scf.eirini.namespace") %>"
+/var/vcap/packages/kubectl/bin/kubectl apply -f secret.yml --namespace "<%= p("cfcluster.eirini.namespace") %>"
 
 status "Setting up Eirini daemonsets"
 
-/var/vcap/packages/kubectl/bin/kubectl apply -f /var/vcap/jobs/configure-scf/config/eirini-daemonset.yaml
+/var/vcap/packages/kubectl/bin/kubectl apply -f /var/vcap/jobs/configure-cf-cluster/config/eirini-daemonset.yaml
 
 <% else %>
 
-/var/vcap/packages/kubectl/bin/kubectl delete -f /var/vcap/jobs/configure-scf/config/eirini-daemonset.yaml || true
+/var/vcap/packages/kubectl/bin/kubectl delete -f /var/vcap/jobs/configure-cf-cluster/config/eirini-daemonset.yaml || true
 
 <% end %>
 
-status "SCF configuration complete."
+status "CF cluster configuration complete."
