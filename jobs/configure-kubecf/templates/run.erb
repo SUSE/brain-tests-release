@@ -93,7 +93,7 @@ retry 240 30s cf api $CF_SKIP "$API_ENDPOINT"
 status "Waiting for UAA ..."
 retry 240 30s curl --connect-timeout 5 --fail --header 'Accept: application/json' $UAA_ENDPOINT/info
 
-insert_cf_client_auth_token.rb "$UAA_ENDPOINT" scf_auto_config:<%= p("uaa.clients.scf_auto_config.secret").shellescape %> ${CURL_SKIP}
+insert_cf_client_auth_token.rb "$UAA_ENDPOINT" kubecf_auto_config:<%= p("uaa.clients.kubecf_auto_config.secret").shellescape %> ${CURL_SKIP}
 
 <%
 %W{staging running}.each do |runtime|

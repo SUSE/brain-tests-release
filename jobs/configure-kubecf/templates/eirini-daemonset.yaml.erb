@@ -68,7 +68,7 @@ spec:
         imagePullPolicy: Always
         env:
         - name: AGENT_METRIC_SOURCE_ID
-          value: scf/daemonset/loggregator-fluentd
+          value: kubecf/daemonset/loggregator-fluentd
         - name: ROUTER_ADDR
           value: <%= p('kubecf.eirini.doppler_address') %>
         - name: ROUTER_ADDR_WITH_AZ
