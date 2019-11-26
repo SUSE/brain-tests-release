@@ -10,13 +10,13 @@
 #
 #    It is expected that the syslog machinery of the pod detects the
 #    new file and forwards the incoming entries as per the
-#    SCF_LOG_... configuration to a receiver. Part of machinery is a
+#    KUBECF_LOG_... configuration to a receiver. Part of machinery is a
 #    cron job running every minute.
 #
 # 2. The receiver is a new pod created and run by the test case. It
 #    uses the brain test image as foundation and installs and runs the
-#    necessary commands to receive log messages on the SCF_LOG_PORT,
-#    per the SCF_LOG_PROTOCOL. The pod is named after the SCF_LOG_HOST
+#    necessary commands to receive log messages on the KUBECF_LOG_PORT,
+#    per the KUBECF_LOG_PROTOCOL. The pod is named after the KUBECF_LOG_HOST
 #    to make it visible to the kube DNS. Received messages are written
 #    to stdout, so that `kubectl logs` will see and report them.
 #
@@ -33,7 +33,7 @@ require 'securerandom'
 require 'timeout'
 
 def show_env
-    ENV.sort.select { |k, v| k.start_with? 'SCF_LOG_' }.each do |k, v|
+    ENV.sort.select { |k, v| k.start_with? 'KUBECF_LOG_' }.each do |k, v|
         puts "#{k}=#{v}"
     end
 end
@@ -47,16 +47,16 @@ def emit_log_entries(namespace, log_file, log_message)
     end
 end
 
-def run_receiver_pod(pod_name, namespace, scf_log_protocol, scf_log_port)
+def run_receiver_pod(pod_name, namespace, log_protocol, log_port)
     image = 'opensuse/leap'
     install_args = "zypper --non-interactive install socat util-linux-systemd"
-    socat_args = "/usr/bin/socat #{scf_log_protocol.upcase}-LISTEN:#{scf_log_port},fork 'EXEC:/usr/bin/logger --socket-errors=off --stderr --tag \\\"\\\"'"
+    socat_args = "/usr/bin/socat #{log_protocol.upcase}-LISTEN:#{log_port},fork 'EXEC:/usr/bin/logger --socket-errors=off --stderr --tag \\\"\\\"'"
     cmd = %W(
         kubectl run #{pod_name}
             --command
             --generator=run-pod/v1
             --namespace #{namespace}
-            --port #{scf_log_port}
+            --port #{log_port}
             --expose
             --image=#{image}
             --
@@ -79,27 +79,27 @@ end
 # (especially the service broker) when we abort.  So we wrap a timeout so that
 # we get a minute to do any cleanup we need.
 Timeout::timeout(ENV.fetch('TESTBRAIN_TIMEOUT', '600').to_i - 60) do
-    SCF_LOG_HOST = ENV.fetch('SCF_LOG_HOST', '')
-    SCF_LOG_PORT = ENV.fetch('SCF_LOG_PORT', '514')
-    SCF_LOG_PROTOCOL = ENV.fetch('SCF_LOG_PROTOCOL', 'tcp')
+    KUBECF_LOG_HOST = ENV.fetch('KUBECF_LOG_HOST', '')
+    KUBECF_LOG_PORT = ENV.fetch('KUBECF_LOG_PORT', '514')
+    KUBECF_LOG_PROTOCOL = ENV.fetch('KUBECF_LOG_PROTOCOL', 'tcp')
 
     KUBERNETES_DOMAIN_SUFFIX = ".#{NAMESPACE}.svc.#{CLUSTER_DOMAIN}"
 
-    if SCF_LOG_HOST.empty?
-        message = "SCF_LOG_HOST not set; expected to end with cluster domain (#{KUBERNETES_DOMAIN_SUFFIX})"
+    if KUBECF_LOG_HOST.empty?
+        message = "KUBECF_LOG_HOST not set; expected to end with cluster domain (#{KUBERNETES_DOMAIN_SUFFIX})"
         STDERR.puts "\e[0;1;31m#{message}\e[0m"
         show_env
         exit_skipping_test
     end
 
-    unless SCF_LOG_HOST.end_with? KUBERNETES_DOMAIN_SUFFIX
-        message = "SCF_LOG_HOST (#{SCF_LOG_HOST}) does not end with cluster domain (#{KUBERNETES_DOMAIN_SUFFIX})"
+    unless KUBECF_LOG_HOST.end_with? KUBERNETES_DOMAIN_SUFFIX
+        message = "KUBECF_LOG_HOST (#{KUBECF_LOG_HOST}) does not end with cluster domain (#{KUBERNETES_DOMAIN_SUFFIX})"
         STDERR.puts "\e[0;1;31m#{message}\e[0m"
         show_env
         fail message
     end
 
-    POD_NAME = SCF_LOG_HOST[0...-KUBERNETES_DOMAIN_SUFFIX.length]
+    POD_NAME = KUBECF_LOG_HOST[0...-KUBERNETES_DOMAIN_SUFFIX.length]
     RUN_SUFFIX = SecureRandom.hex(16) # HEX doubles output -> 32 characters.
 
     # The file used as destination for the logs.
@@ -132,7 +132,7 @@ Timeout::timeout(ENV.fetch('TESTBRAIN_TIMEOUT', '600').to_i - 60) do
     }.abort_on_exception = true
 
     # (B) Configure and run the log receiver pod.
-    run_receiver_pod(POD_NAME, NAMESPACE, SCF_LOG_PROTOCOL, SCF_LOG_PORT)
+    run_receiver_pod(POD_NAME, NAMESPACE, KUBECF_LOG_PROTOCOL, KUBECF_LOG_PORT)
 
     # Wait for the receiver pod to be ready.
     wait_for_pod_ready(POD_NAME, NAMESPACE)
