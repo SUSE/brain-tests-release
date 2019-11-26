@@ -1,6 +1,6 @@
 ---
 name: log-cache-scheduler-properties
-description: Dummy BOSH job used to host parameters that are used in SCF patches
+description: Dummy BOSH job used to host parameters that are used in KUBECF patches
 
 packages:
 
