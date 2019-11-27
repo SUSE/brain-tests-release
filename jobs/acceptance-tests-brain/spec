@@ -17,6 +17,7 @@ templates:
   run.erb: bin/run
   environment.sh.erb: bin/environment.sh
   pre-start.erb: bin/pre-start
+  bpm.yml.erb: config/bpm.yml
 
 properties:
   acceptance_tests_brain.domain:
