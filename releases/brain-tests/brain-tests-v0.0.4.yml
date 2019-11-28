@@ -1,0 +1,163 @@
+name: brain-tests
+version: v0.0.4
+commit_hash: 68fa6c6
+uncommitted_changes: false
+jobs:
+- name: acceptance-tests
+  version: c135473cacd00b91807d458e980d22875825601d137b0bca413c21c21c935730
+  fingerprint: c135473cacd00b91807d458e980d22875825601d137b0bca413c21c21c935730
+  sha1: sha256:8dd6f09c4cc53d74ec4e05787c12b6574c59dd845c7d986fd071c6b6cc108f8d
+  packages:
+  - golang1.10
+  - cli
+  - acceptance-tests
+  - cli-network-policy-plugin
+  - cli-log-cache-plugin
+- name: acceptance-tests-brain
+  version: d4fe48ec1283c644301075eb0265dd9b64708a0f40580368b8090869ad450294
+  fingerprint: d4fe48ec1283c644301075eb0265dd9b64708a0f40580368b8090869ad450294
+  sha1: sha256:09d63a4631a1e71e57ae4f1f4ad0c792041fa20a50991fe2ad23169fbc35fa9a
+  packages:
+  - cli
+  - kubectl
+  - helm
+  - acceptance-tests-brain
+  - acceptance-tests
+  - docker-distribution
+  - credhub-cli
+  - mariadb-client
+- name: authorize-internal-ca
+  version: d93b8934377a83de699953465e418f5b4247100e317a2f8200c3a3a9addc297b
+  fingerprint: d93b8934377a83de699953465e418f5b4247100e317a2f8200c3a3a9addc297b
+  sha1: sha256:01a424e84d756b8e5dc9114ad7dc3bbaede81aa16d08197019fc86a1debd2862
+  packages: []
+- name: configure-kubecf
+  version: f156bfed5cee4cabfcedcf21ce749edaee34838d7d14551cf2a0e3fb15504ce9
+  fingerprint: f156bfed5cee4cabfcedcf21ce749edaee34838d7d14551cf2a0e3fb15504ce9
+  sha1: sha256:2de11ec1ecbf9f4e0c64d2d87cb113eac7d12b97e01276b6a1ed1fe4923b1888
+  packages:
+  - cli
+  - ruby-2.3
+  - service-registration-utils
+  - kubectl
+- name: get-kubectl
+  version: 3d41b5ef83bc079ff06cb459774dc48599a120b962b44bd9ceadb2c76b46c0c4
+  fingerprint: 3d41b5ef83bc079ff06cb459774dc48599a120b962b44bd9ceadb2c76b46c0c4
+  sha1: sha256:49e9cebd433ed93251e60e99460640761616754e5a3dbb8b0a90fd47903cf052
+  packages:
+  - kubectl
+- name: log-cache-scheduler-properties
+  version: 56392dbf6f1e65208cafe6abff28460f51859227c6f7bae96e97476b4cf17f4b
+  fingerprint: 56392dbf6f1e65208cafe6abff28460f51859227c6f7bae96e97476b4cf17f4b
+  sha1: sha256:c160e3fbd556879b6fea0b684259896d797817ba6c4a0c68e9c499eda8d32258
+  packages: []
+- name: uaa-create-user
+  version: 9dd6be3a17ea6eedbec3ccb33c0dba2818e047b3669220c75db36f47fd721751
+  fingerprint: 9dd6be3a17ea6eedbec3ccb33c0dba2818e047b3669220c75db36f47fd721751
+  sha1: sha256:fb643808866a7afdfc2f99c7ca2c4d9d1e7086f25a3ce82d6459bc0a8d141521
+  packages:
+  - cf-uaac
+  - ruby-2.3
+- name: wait-for-api
+  version: 65d06424ff5e327229d8cea2f1ea62084569f8555db8fa88d70fe22560205371
+  fingerprint: 65d06424ff5e327229d8cea2f1ea62084569f8555db8fa88d70fe22560205371
+  sha1: sha256:96785a0aaff049b04008513f915132e91b93583fa83ed11260228d322d3a384b
+  packages: []
+- name: wait-for-uaa
+  version: 0b0053cb982b6d59a1c986b3acd043948d32bf7cf89412995fe58428c836c001
+  fingerprint: 0b0053cb982b6d59a1c986b3acd043948d32bf7cf89412995fe58428c836c001
+  sha1: sha256:fec991b3bc5d90572d7f863fcf5f8f7e48ba59117620ef7985dec063c2fcba83
+  packages: []
+packages:
+- name: acceptance-tests
+  version: 09eb6c2a23f5b34ef73749f2cbe770e77561a6c13ac8108a6346e4932e7c6360
+  fingerprint: 09eb6c2a23f5b34ef73749f2cbe770e77561a6c13ac8108a6346e4932e7c6360
+  sha1: sha256:a8518540d191f620ae853ad29cde71c781d9c0d36801678bf317f841322dc76b
+  dependencies:
+  - cli
+- name: acceptance-tests-brain
+  version: 0db2de435d97ce22ac488d1d8bcd9c5d0043d80887c3b84d9ca4485de2919d93
+  fingerprint: 0db2de435d97ce22ac488d1d8bcd9c5d0043d80887c3b84d9ca4485de2919d93
+  sha1: sha256:3e55506f559f96213b0e38464e469362a822b5a69d42f560823d11925fe155ca
+  dependencies:
+  - cli
+  - kubectl
+  - golang1.10
+  - ruby-2.3
+- name: cf-uaac
+  version: 1d13c56d8a70fd448e8935a98e593575a428606fdb2bc0edbb89cf54bd5d4751
+  fingerprint: 1d13c56d8a70fd448e8935a98e593575a428606fdb2bc0edbb89cf54bd5d4751
+  sha1: sha256:547e467f0ebd7941cb9ca781735b2fda8da109600134f1676b9468446cc964ed
+  dependencies:
+  - ruby-2.3
+- name: cli
+  version: 10922fba4acb3528b98f329e22e3afc3b6bef7a300739ab762d495e089fadb42
+  fingerprint: 10922fba4acb3528b98f329e22e3afc3b6bef7a300739ab762d495e089fadb42
+  sha1: sha256:cb2a1ab13eac604f2dec4562971cd827b5832149bb32ff6303750408d04b439f
+  dependencies: []
+- name: cli-log-cache-plugin
+  version: eb3726b2e8bdb184eb86620089e243aee29b57b854e4b17d356714c3d0e12a74
+  fingerprint: eb3726b2e8bdb184eb86620089e243aee29b57b854e4b17d356714c3d0e12a74
+  sha1: sha256:8748e4568e09c19f72df69ee28255911f14dba15f1412650cf0669f227a75a2c
+  dependencies: []
+- name: cli-network-policy-plugin
+  version: ba19974148e19d3e6a2807a2bdd124b92c0ce005b6723eb5cd267e42fae0d71c
+  fingerprint: ba19974148e19d3e6a2807a2bdd124b92c0ce005b6723eb5cd267e42fae0d71c
+  sha1: sha256:04ca44a6f8fc91e1636cf545b2759be735b2bb50049b2ca7d81419e01ddeadf9
+  dependencies: []
+- name: credhub-cli
+  version: e1301a019b1b855536edf54adb1a599b5f9ddb321a4f942d7dd3c7b2f64cae49
+  fingerprint: e1301a019b1b855536edf54adb1a599b5f9ddb321a4f942d7dd3c7b2f64cae49
+  sha1: sha256:733c5d819206d4b3b0eb1e17c1db0edc761fc8ed3f5d7f0896e505c553c59025
+  dependencies: []
+- name: docker-distribution
+  version: dbc9e7a0477ccdcaa3c603023ce19c5461eb94e0059203596dcb8028fb0d61fa
+  fingerprint: dbc9e7a0477ccdcaa3c603023ce19c5461eb94e0059203596dcb8028fb0d61fa
+  sha1: sha256:c11f91e262e9aec7cbf42a80553b165453c2314c3406519d82b6f30292ad5545
+  dependencies:
+  - golang1.10
+- name: git
+  version: ee2e0e07b24ce63a1a73967467772db8a98fb0ce13c0e96802d51462f07f090c
+  fingerprint: ee2e0e07b24ce63a1a73967467772db8a98fb0ce13c0e96802d51462f07f090c
+  sha1: sha256:d956f39fb22337cc0b612d833c0f0e1e4a356ad751f576a2f61149ec91089ee8
+  dependencies: []
+- name: golang1.10
+  version: 0751496c101ade67846b8679b4a84fcc0b0914a883f1bb229165143a60ca51a9
+  fingerprint: 0751496c101ade67846b8679b4a84fcc0b0914a883f1bb229165143a60ca51a9
+  sha1: sha256:bf89126d321955a7953782d74fb9ce2819f22e5e2637daf0bc35429de2502c06
+  dependencies: []
+- name: helm
+  version: 61763a347e38f467564e0d7ca3121a128662a4ac1e5453e2822555fcfd436aeb
+  fingerprint: 61763a347e38f467564e0d7ca3121a128662a4ac1e5453e2822555fcfd436aeb
+  sha1: sha256:86c50e7cd43d497068d71585bb25b0718e837d3b0dfb0a64e818e43edd60c570
+  dependencies: []
+- name: kubectl
+  version: d7b7e8195acc72b76dd382014bc130f5f1401a8ac9791145eb55d70d1694488b
+  fingerprint: d7b7e8195acc72b76dd382014bc130f5f1401a8ac9791145eb55d70d1694488b
+  sha1: sha256:bcdf6a87a1080182d500d69195c4e934e3d248fc6108d7dc19c5a9712527ada4
+  dependencies: []
+- name: mariadb-client
+  version: 352334090f11912db3c83a5e6c62fa9cbb5327837be0c7799094600c15475092
+  fingerprint: 352334090f11912db3c83a5e6c62fa9cbb5327837be0c7799094600c15475092
+  sha1: sha256:6415487f1c718c97fe2f22720457f87092cf0ffb314695d8735baef63fcd527c
+  dependencies: []
+- name: pid_utils
+  version: b7495b5514d5375d2e7a8ff9ea54975ffb3cd23392df0607c385d692edb3da89
+  fingerprint: b7495b5514d5375d2e7a8ff9ea54975ffb3cd23392df0607c385d692edb3da89
+  sha1: sha256:ee490f9b55640c1775e8b4434c6f2d9452064fdbab161fcde36fecece34171bf
+  dependencies: []
+- name: ruby-2.3
+  version: 3bfd0296c2654b632f2af3833b0283b4e9a6104db86c3c76b6e0ef3ecafac661
+  fingerprint: 3bfd0296c2654b632f2af3833b0283b4e9a6104db86c3c76b6e0ef3ecafac661
+  sha1: sha256:1bdddeba507b69bde094c3633466debde22a10eee58e58ffdd6c60163c8e6a29
+  dependencies: []
+- name: service-registration-utils
+  version: 53789e7123aa3f2d54acaa5699260f864d6db98077eeb14bc802ede0a842ac15
+  fingerprint: 53789e7123aa3f2d54acaa5699260f864d6db98077eeb14bc802ede0a842ac15
+  sha1: sha256:408307ccc5474d21527a69c0cabe7a9dc28a2d67f5408d601673df5cab1c46b8
+  dependencies:
+  - ruby-2.3
+license:
+  version: eefa533b44473426f0d39cb7de4a5de1342863955201ca83ddaefe4a0c96d174
+  fingerprint: eefa533b44473426f0d39cb7de4a5de1342863955201ca83ddaefe4a0c96d174
+  sha1: sha256:ea0e0a863e0a0b5c155be97e0d77cbd8e30720294f5a492c9a444915d0fb3de2
