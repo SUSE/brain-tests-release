@@ -22,6 +22,7 @@ if [ ! -f "${HELM_BIN_DIR}/${HELM_VERSION}/helm" ]; then
 fi
 
 export PATH="${HELM_BIN_DIR}/${HELM_VERSION}:${PATH}"
+export PATH="/var/vcap/packages/ruby-2.3/bin:${PATH}"
 export PATH="/var/vcap/packages/cli/bin:${PATH}"
 export PATH="/var/vcap/packages/kubectl/bin:${PATH}"
 export PATH="/var/vcap/packages/credhub-cli/bin:${PATH}"
