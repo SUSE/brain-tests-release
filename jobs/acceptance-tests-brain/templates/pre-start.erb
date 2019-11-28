@@ -1,4 +1,5 @@
 #!/bin/sh
+<% require 'shellwords' %>
 
 set -o errexit
 set -o nounset
@@ -6,8 +7,10 @@ set -o nounset
 PATH=$PATH:/var/vcap/packages/cli/bin
 
 cf api --skip-ssl-validation \
-   "https://<%= properties.smoke_tests.api.shellescape %>"
+   https://<%= properties.smoke_tests.api.shellescape %>
+
 cf auth \
-   "<%= properties.acceptance_tests_brain.user.shellescape %>" \
-   "<%= properties.acceptance_tests_brain.password.shellescape %>"
+   <%= properties.acceptance_tests_brain.user.shellescape %> \
+   <%= properties.acceptance_tests_brain.password.shellescape %>
+
 cf enable-feature-flag diego_docker
