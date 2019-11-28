@@ -4,9 +4,10 @@ set -o errexit
 set -o nounset
 
 PATH=$PATH:/var/vcap/packages/cli/bin
-API="<%= properties.smoke_tests.api %>"
-PASSWORD="<%= properties.acceptance_tests_brain.password %>"
 
-cf api --skip-ssl-validation "${API}"
-cf auth admin "${PASSWORD}"
+cf api --skip-ssl-validation \
+   "https://<%= properties.smoke_tests.api.shellescape %>"
+cf auth \
+   "<%= properties.acceptance_tests_brain.user.shellescape %>" \
+   "<%= properties.acceptance_tests_brain.password.shellescape %>"
 cf enable-feature-flag diego_docker
