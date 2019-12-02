@@ -12,6 +12,7 @@ packages:
   - docker-distribution
   - credhub-cli
   - mariadb-client
+  - ruby-2.3
 
 templates:
   run.erb: bin/run
