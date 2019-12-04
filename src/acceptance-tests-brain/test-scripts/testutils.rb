@@ -42,7 +42,7 @@ def use_global_timeout(shutdown_time=60)
             main_thread.raise e
         else
             # Timeout reached
-            STDERR.puts "\e[0;1;31mGlobal timeout triggered at #{DateTime.now}\e[0m"
+            puts "#{c_reset}#{c_red}Global timeout triggered at #{DateTime.now}#{c_reset}"
             main_thread.raise Timeout::Error, "timeout reached after #{sleep_duration} seconds"
         end
     end
@@ -83,7 +83,7 @@ def _print_command(*args)
     cmd.pop if cmd.last.is_a? Hash
     opts = $opts.dup
     opts.merge! args.last if args.last.is_a? Hash
-    STDERR.puts "#{c_bold}+ #{cmd.join(" ")}#{c_reset}" if opts[:xtrace]
+    puts "#{c_bold}+ #{cmd.join(" ")}#{c_reset}" if opts[:xtrace]
     STDERR.flush
 end
 

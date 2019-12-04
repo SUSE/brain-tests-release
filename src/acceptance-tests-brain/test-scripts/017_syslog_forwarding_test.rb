@@ -40,7 +40,7 @@ end
 
 def emit_log_entries(namespace, log_file, log_message)
     cmd = "kubectl exec --namespace #{namespace} api-group-0 -c api-group --stdin -- tee -a #{log_file}"
-    STDERR.puts "Emitting log entries to #{log_file}\n"
+    puts "Emitting log entries to #{log_file}\n"
     loop do
         run_with_status("echo #{$0} @ #{Time.now}: #{log_message} | #{cmd} > /dev/null", xtrace: false)
         sleep 1
@@ -87,14 +87,14 @@ Timeout::timeout(ENV.fetch('TESTBRAIN_TIMEOUT', '600').to_i - 60) do
 
     if KUBECF_LOG_HOST.empty?
         message = "KUBECF_LOG_HOST not set; expected to end with cluster domain (#{KUBERNETES_DOMAIN_SUFFIX})"
-        STDERR.puts "\e[0;1;31m#{message}\e[0m"
+        puts "#{c_reset}#{c_red}#{message}#{c_reset}"
         show_env
         exit_skipping_test
     end
 
     unless KUBECF_LOG_HOST.end_with? KUBERNETES_DOMAIN_SUFFIX
         message = "KUBECF_LOG_HOST (#{KUBECF_LOG_HOST}) does not end with cluster domain (#{KUBERNETES_DOMAIN_SUFFIX})"
-        STDERR.puts "\e[0;1;31m#{message}\e[0m"
+        puts "#{c_reset}#{c_red}#{message}#{c_reset}"
         show_env
         fail message
     end

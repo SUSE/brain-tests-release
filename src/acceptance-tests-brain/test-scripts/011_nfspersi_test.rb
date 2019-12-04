@@ -57,7 +57,7 @@ end
 raise "No storage class available" if storage_class.empty?
 provisioner = capture("kubectl get storageclass #{storage_class} -o jsonpath={.provisioner}")
 if provisioner.downcase.include? 'nfs'
-    STDERR.puts "Skipping NFS-Persi test due to storage class using NFS"
+    puts "Skipping NFS-Persi test due to storage class using NFS"
     exit_skipping_test
 end
 
