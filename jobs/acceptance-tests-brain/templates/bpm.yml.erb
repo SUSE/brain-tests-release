@@ -2,3 +2,8 @@ processes:
   - name: acceptance-tests-brain
     executable: /var/vcap/jobs/acceptance-tests-brain/bin/run
     ephemeral_disk: true
+    env:
+      EXCLUDE: <%= p('acceptance_tests_brain.exclude') %>
+      IN_ORDER: <%= p('acceptance_tests_brain.in_order') %>
+      INCLUDE: <%= p('acceptance_tests_brain.include') %>
+      VERBOSE: <%= p('acceptance_tests_brain.verbose') %>
