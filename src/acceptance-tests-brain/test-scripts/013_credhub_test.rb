@@ -1,49 +1,28 @@
 #!/usr/bin/env ruby
 
-require_relative 'testutils'
 require 'base64'
 require 'json'
 
-NAMESPACE = ENV['KUBERNETES_NAMESPACE']
-STATEFULSET_NAME = 'credhub-user'
-
-# Check if credhub is running, otherwise skip the test.
-exit_skipping_test if !statefulset_ready(NAMESPACE, STATEFULSET_NAME)
-
-login
-setup_org_space
+require_relative 'testutils'
 
 CH_CLI = 'credhub'
 CH_SERVICE = "https://credhub.#{ENV['CF_DOMAIN']}"
 
-# Ask a pod for the name of the relevant secret. This handles HA
-# properly, and query after a rotation as well.
+# Check if credhub is running, otherwise skip the test.
+status = run_with_status('curl', '--silent', '--fail', '--insecure', "#{CH_SERVICE}/info")
+exit_skipping_test unless status.success?
 
-# Regarding the use of `nats` below:
-# - Wanted a central pod/job which when missing indicates/causes much
-#   bigger trouble than failing brain tests. I.e. if that is missing
-#   we should never reach the tests. Of course, there are more than
-#   just `nats` which would do. It was just the one which popped into
-#   my mind.
+login
 
-nats_info = JSON.load capture("kubectl get pods --namespace #{NAMESPACE} --selector app.kubernetes.io/component=nats -o json")
-SECRET = nats_info['items'].map do |item|
-    item['spec']['containers'].
-        find { |c| c['name'] == 'nats' }['env'].
-        find { |e| e['name'] == 'INTERNAL_CA_CERT' }['valueFrom']['secretKeyRef']['name']
-end.first
-
-secrets = JSON.load capture("kubectl get secrets --namespace #{NAMESPACE} #{SECRET} -o json")
-CH_SECRET = Base64.decode64(secrets['data']['uaa-clients-credhub-user-cli-secret'])
-CH_CLIENT = 'credhub_user_cli'
+# Skip the test if we do not have credhub auth set up
+exit_skipping_test unless ENV['CREDHUB_CLIENT'] && ENV['CREDHUB_SECRET']
+run CH_CLI, 'api', '--skip-tls-validation', CH_SERVICE
+run CH_CLI, 'login',
+    "--client-name=#{ENV['CREDHUB_CLIENT']}",
+    "--client-secret=#{ENV['CREDHUB_SECRET']}",
+    xtrace: false
 
 tmpdir = mktmpdir
-
-# Target the credhub kube service, via the registered gorouter endpoint
-run "#{CH_CLI} api --skip-tls-validation --server #{CH_SERVICE}"
-
-# Log into credhub
-run "#{CH_CLI} login --client-name=#{CH_CLIENT} --client-secret=#{CH_SECRET}"
 
 # Insert ...
 run "#{CH_CLI} set -n FOX -t value -v 'fox over lazy dog' > #{tmpdir}/fox"

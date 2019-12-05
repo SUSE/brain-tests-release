@@ -51,6 +51,12 @@ properties:
   acceptance_tests_brain.in_order:
     description: Whether to execute tests in sorted order
     default: false
+  acceptance_tests_brain.credhub_client:
+    description: The UAA OAuth client to authenticate with for CredHub
+    default: credhub_admin_client
+  acceptance_tests_brain.credhub_secret:
+    description: The UAA OAuth client secret to authenticate with for CredHub
+    example: ((credhub_admin_client_secret))
 
   smoke_tests.autoscaler_endpoint:
     description: AutoScaler API endpoint (including scheme and port)

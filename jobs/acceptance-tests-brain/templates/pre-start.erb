@@ -5,6 +5,7 @@ set -o errexit
 set -o nounset
 
 PATH=$PATH:/var/vcap/packages/cli/bin
+PATH=$PATH:/var/vcap/packages/credhub-cli/bin
 
 cf api --skip-ssl-validation \
    https://<%= properties.smoke_tests.api.shellescape %>
@@ -14,3 +15,17 @@ cf auth \
    <%= properties.acceptance_tests_brain.password.shellescape %>
 
 cf enable-feature-flag diego_docker
+
+<%
+if_p('acceptance_tests_brain.credhub_client') do |client|
+    if_p('acceptance_tests_brain.credhub_secret') do |secret|
+        %>
+            credhub api --skip-tls-validation \
+                https://credhub.<%= p('acceptance_tests_brain.domain').shellescape %>
+            credhub login \
+                --client-name=<%= client.shellescape %> \
+                --client-secret=<%= secret.shellescape %>
+        <%
+    end
+end
+%>
