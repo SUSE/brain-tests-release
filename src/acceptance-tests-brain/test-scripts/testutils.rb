@@ -138,7 +138,7 @@ end
 # Log in to the CF installation under test.
 def login
     run "cf api --skip-ssl-validation api.#{ENV['CF_DOMAIN']}"
-    run "cf auth #{ENV['CF_USERNAME']} #{ENV['CF_PASSWORD']}"
+    run "cf auth #{ENV['CF_USERNAME']} #{ENV['CF_PASSWORD']}", xtrace: false
 end
 
 # Set up temporary org / space in the CF installation under test.
