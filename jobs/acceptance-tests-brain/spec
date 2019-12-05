@@ -39,6 +39,18 @@ properties:
     description: Name of the storage class to use in the creation of persistent volumes
   acceptance_tests_brain.namespace:
     description: The k8s namespace the test role is run inside of
+  acceptance_tests_brain.include:
+    description: Regular expression for tests to include
+    default: ''
+  acceptance_tests_brain.exclude:
+    description: Regular expression for tests to exclude
+    default: ''
+  acceptance_tests_brain.verbose:
+    description: Whether to display tests as they run
+    default: false
+  acceptance_tests_brain.in_order:
+    description: Whether to execute tests in sorted order
+    default: false
 
   smoke_tests.autoscaler_endpoint:
     description: AutoScaler API endpoint (including scheme and port)
