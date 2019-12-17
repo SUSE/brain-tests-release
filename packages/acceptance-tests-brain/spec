@@ -4,7 +4,7 @@ dependencies:
   - cli
   - kubectl
   - golang1.10
-  - ruby-2.3
+  - ruby-2.6.5-r0.26.0
 files:
   - acceptance-tests-brain/test-scripts/*
   - acceptance-tests-brain/test-resources/**/*
