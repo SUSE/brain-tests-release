@@ -2,6 +2,8 @@
 
 set -o errexit
 
+source /var/vcap/packages/ruby-2.6.5-r0.26.0/bosh/runtime.env
+
 # Use the primary linked helm client to determine the actual version
 # of the server. Check if we have a client for that version packaged,
 # and if yes, put it on the PATH. Else fails with a nice message.
@@ -22,7 +24,6 @@ if [ ! -f "${HELM_BIN_DIR}/${HELM_VERSION}/helm" ]; then
 fi
 
 export PATH="${HELM_BIN_DIR}/${HELM_VERSION}:${PATH}"
-export PATH="/var/vcap/packages/ruby-2.3/bin:${PATH}"
 export PATH="/var/vcap/packages/cli/bin:${PATH}"
 export PATH="/var/vcap/packages/kubectl/bin:${PATH}"
 export PATH="/var/vcap/packages/credhub-cli/bin:${PATH}"
