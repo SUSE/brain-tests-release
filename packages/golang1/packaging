@@ -2,7 +2,7 @@
 
 set -o errexit -o xtrace -o nounset
 
-tar xzf golang/go1.13.5.linux-amd64.tar.gz
+tar xzf golang/go1.13.7.linux-amd64.tar.gz
 cp -R go/* "${BOSH_INSTALL_TARGET}"
 
 # Check to make sure we have the expected output
