@@ -5,8 +5,7 @@ set -o errexit
 BIN_DIR="${BOSH_INSTALL_TARGET}/bin"
 
 HELM_VERSIONS=(
-  "2.8.2" # Version shipped with CaaSP 3 by default.
-  "2.11.0" # Version shipped with the Vagrant box by default.
+  "3.0.3" # Version used by kubecf
 )
 
 for helm_version in "${HELM_VERSIONS[@]}"
@@ -15,8 +14,12 @@ do
 
     DEST="${BIN_DIR}/${helm_version}"
     mkdir -p "${DEST}"
-    helm_url="https://storage.googleapis.com/kubernetes-helm/helm-v${helm_version}-linux-amd64.tar.gz"
-    curl -L "${helm_url}" | tar zx --strip-components 1 -C "${DEST}"
+    helm_url="https://get.helm.sh/helm-v${helm_version}-linux-amd64.tar.gz"
+    echo URL: ${helm_url}
+    curl -L "${helm_url}" > helm-tarball
+    ls -l helm-tarball
+    file  helm-tarball
+    cat   helm-tarball | tar zx --strip-components 1 -C "${DEST}"
 done
 
 # Link the last Helm client as the primary.
