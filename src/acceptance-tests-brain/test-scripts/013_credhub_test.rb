@@ -8,8 +8,18 @@ require_relative 'testutils'
 CH_CLI = 'credhub'
 CH_SERVICE = "https://credhub.#{ENV['CF_DOMAIN']}"
 
-# Check if credhub is running, otherwise skip the test.
-status = run_with_status('curl', '--silent', '--fail', '--insecure', "#{CH_SERVICE}/info")
+# Check if credhub is running, otherwise skip the test.  We do not
+# break on the first failure, but check a bit more, in case it was a
+# transient issue with the endpoint. We do accept sucess immediately,
+# tough.
+
+# Initialize status outside of loop block to be able to check after loop ends.
+status = run_with_status('true');
+10.times do
+  status = run_with_status('curl', '--silent', '--fail', '--insecure', "#{CH_SERVICE}/info")
+  break if status.success?
+  sleep 1
+end
 exit_skipping_test unless status.success?
 
 login
