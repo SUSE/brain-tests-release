@@ -450,5 +450,9 @@ func uploadManifest(registry, name, tag, layerDigest string) error {
 	fmt.Printf("\n")
 	io.Copy(os.Stdout, resp.Body)
 	fmt.Printf("\n")
+
+	if resp.StatusCode < 200 || resp.StatusCode > 299 {
+		return fmt.Errorf("Registry error: %s", resp.Status)
+	}
 	return nil
 }
