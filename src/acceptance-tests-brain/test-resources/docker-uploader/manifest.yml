@@ -34,5 +34,7 @@ applications:
 
 - name: uploader
   buildpack: binary_buildpack
+  env:
+    GODEBUG: http2client=0
   command:
     ./bin/docker-uploader
