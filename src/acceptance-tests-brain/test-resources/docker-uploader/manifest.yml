@@ -5,8 +5,8 @@ shared: &shared
   command: ./bin/registry serve ./config.yml
   env: &env
     REGISTRY_HTTP_ADDR: :8080
-    REGISTRY_LOG_ACCESSLOG_DISABLED: true
-    REGISTRY_LOG_LEVEL: error
+    REGISTRY_LOG_ACCESSLOG_DISABLED: false
+    REGISTRY_LOG_LEVEL: debug
   health-check-type: port
 
 applications:
