@@ -25,9 +25,9 @@ run "cf create-security-group #{CF_SEC_GROUP} #{tmpdir}/secgroup.json"
 run "cf bind-security-group #{CF_SEC_GROUP} #{$CF_ORG} #{$CF_SPACE} --lifecycle staging"
 run "cf bind-security-group #{CF_SEC_GROUP} #{$CF_ORG} #{$CF_SPACE} --lifecycle running"
 
+# Defered: 'secure-registry'   => "https://secure-registry.#{ENV['CF_DOMAIN']}",          # Router SSL cert
 REGISTRIES = {
-    'secure-registry'   => "https://secure-registry.#{ENV['CF_DOMAIN']}",          # Router SSL cert
-    'insecure-registry' => "https://insecure-registry.#{CF_TCP_DOMAIN}:20005",     # Self-signed SSL cert
+    'insecure-registry' => "https://insecure-registry.#{CF_TCP_DOMAIN}:20005"     # Self-signed SSL cert
 }
 
 at_exit do
@@ -49,7 +49,9 @@ end
 run "cf create-shared-domain #{CF_TCP_DOMAIN} --router-group default-tcp"
 run "cf update-quota default --reserved-route-ports -1"
 
-# Deploy the registry
+puts "deploy ...................................................................."
+
+# Deploy the registry ... Assemble the apps for push
 FileUtils::Verbose.cp resource_path('docker-uploader/manifest.yml'),
     '/var/vcap/packages/docker-distribution/manifest.yml'
 FileUtils::Verbose.cp resource_path('docker-uploader/config.yml'),
@@ -59,7 +61,8 @@ FileUtils::Verbose.cp '/var/vcap/packages/acceptance-tests-brain/bin/docker-uplo
 FileUtils::Verbose.cp '/var/vcap/packages/acceptance-tests-brain/bin/registry',
     '/var/vcap/packages/docker-distribution/bin/'
 at_exit do
-    set errxit: false do
+    set errexit: false do
+        puts "........................................................................... SHUTDOWN"
         run "cf delete -f secure-registry"
         run "cf delete -f insecure-registry"
         run "cf delete -f uploader"
@@ -70,25 +73,54 @@ run "cf push -f manifest.yml --var tcp-domain=#{CF_TCP_DOMAIN}",
 
 run 'cf apps'
 
+# With the apps running, now watch (tail) all their logs. (Dumped into helper files)
+# Whenever needed we simply cat the relevant logs into the test output.
+
+Thread.new{
+    run "cf logs uploader > #{tmpdir}/app-uploader.log"
+}.abort_on_exception = true
+
 REGISTRIES.each_pair do |regname, registry_url|
+    Thread.new{
+        run "cf logs #{regname} > #{tmpdir}/app-#{regname}.log"
+    }.abort_on_exception = true
+end
+
+# Wait a bit to have the log tailer thread start properly and settle before doing more.
+sleep 5
+
+REGISTRIES.each_pair do |regname, registry_url|
+    puts "wait for registry to be available ......................................... #{regname}"
     # Wait for the registry to be available
     run_with_retry 60, 1 do
         run "curl -kv #{registry_url}/v2/"
     end
+end
+
+REGISTRIES.each_pair do |regname, registry_url|
+    puts "upload uploader ........................................................... #{regname}"
     begin
         run "curl --fail http://uploader.#{ENV['CF_DOMAIN']} -d registry=#{registry_url} -d name=image"
     rescue
-        set errexit: false do
-            run "cf logs uploader --recent"
-            run "cf logs #{regname} --recent"
+      set errexit: false do
+            puts "upload uploader ........................................................... #{regname} FAIL"
+            run 'cf apps'
+            # Wait a bit for the log tailers to flush stuff
+            sleep 5
+            run "cat #{tmpdir}/app-uploader.log   | sed -e 's/^/UPLOADER: /'"
+            run "cat #{tmpdir}/app-#{regname}.log | sed -e 's/^/#{regname}: /'"
         end
         raise
     end
+    # Wait a bit for the log tailers to flush stuff
+    sleep 5
+    run "cat #{tmpdir}/app-uploader.log | sed -e 's/^/UPLOADER: /'"
 end
 
 caught_error = nil
 
 REGISTRIES.each_pair do |regname, registry_url|
+    puts "uploader as docker app .................................................... #{regname}"
     begin
         registry = registry_url.sub %r#^https://#, ''
         run "cf push from-#{regname} --docker-image #{registry}/image:latest"
@@ -96,7 +128,10 @@ REGISTRIES.each_pair do |regname, registry_url|
         caught_error = e
         set errexit: false do
             run "cf logs --recent from-#{regname}"
-            run "cf logs --recent #{regname}"
+            # Wait a bit for the log tailers to flush stuff
+            sleep 5
+            run "cat #{tmpdir}/app-uploader.log   | sed -e 's/^/UPLOADER: /'"
+            run "cat #{tmpdir}/app-#{regname}.log | sed -e 's/^/#{regname}: /'"
         end
     ensure
         set errexit: false do
@@ -104,4 +139,6 @@ REGISTRIES.each_pair do |regname, registry_url|
         end
     end
 end
+
+puts "..........................................................................."
 raise caught_error if caught_error
