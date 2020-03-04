@@ -16,3 +16,6 @@ health:
     enabled: true
     interval: 10s
     threshold: 3
+compatibility:
+  schema1:
+    enabled: true
