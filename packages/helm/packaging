@@ -16,10 +16,7 @@ do
     mkdir -p "${DEST}"
     helm_url="https://get.helm.sh/helm-v${helm_version}-linux-amd64.tar.gz"
     echo URL: ${helm_url}
-    curl -L "${helm_url}" > helm-tarball
-    ls -l helm-tarball
-    file  helm-tarball
-    cat   helm-tarball | tar zx --strip-components 1 -C "${DEST}"
+    curl -L "${helm_url}" | tar zx --strip-components 1 -C "${DEST}"
 done
 
 # Link the last Helm client as the primary.

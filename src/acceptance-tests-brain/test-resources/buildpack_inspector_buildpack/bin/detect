@@ -13,38 +13,33 @@ exec 1>&2
 # `vendor/bundle/ruby/2.6.0/gems/activesupport-4.2.11.1/lib/active_support/dependencies`
 # as found in the online PHP buildpack does NOT count.
 #
-# This is achieved using `-maxdepth 3` to limit the traversal depth.
-# Note that while depth 2 is good enough to detect `dependencies`,
-# path `resources/cache` requires depth 3. If this leads to
-# misdetections for `dependencies` in the children of the BP toplevels
-# we will have to split the `find` command into two. For now we do not
-# care.
+# This is achieved by explicitly iterating over the buildpacks and
+# testing for the problematic directories.
 
 LOCATION="/tmp/buildpacks"
+LOCATION="/home/andreask/fast/dev/kubecf-1/_work/offline-bp"
 
 report() {
     buildpack="${1}"
     echo "### Buildpack cache detection: ERROR: found cached dependencies in ${buildpack}"
-    case "${buildpack}" in
-	*/cache)
-	    language="language: java"
-	    ;;
-	*)
-	    buildpack_dir="$(dirname ${buildpack})"
-	    language="$(grep language ${buildpack_dir}/manifest.yml)"
-	    ;;
-    esac
+    if test -d "${buildpack}/resources/cache"
+    then
+	language="language: java"
+    else
+	language="$(grep language ${buildpack}/manifest.yml)"
+    fi
     echo "### Buildpack cache detection: ${language}"
 }
 
-offenders="$(find "${LOCATION}" -maxdepth 3 -type d -path '*/resources/cache' -o -name dependencies)"
-
-if [[ -n "${offenders}" ]]; then
-    for buildpack in ${offenders}; do
+has_errors=""
+for buildpack in "${LOCATION}"/* ; do
+    if test -d "${buildpack}/dependencies" -o -d "${buildpack}/resources/cache"
+    then
 	report "${buildpack}"
-    done
+	has_errors=yes
+    fi
+done
+if [[ -n "${has_errors}" ]]
+then
     exit 1
-else
-    echo "### Buildpack cache detection: No cached dependencies found"
-    exit 0 # Indicate that the buildpacks are fine by accepting the app
 fi
