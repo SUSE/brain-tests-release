@@ -17,7 +17,6 @@ exec 1>&2
 # testing for the problematic directories.
 
 LOCATION="/tmp/buildpacks"
-LOCATION="/home/andreask/fast/dev/kubecf-1/_work/offline-bp"
 
 report() {
     buildpack="${1}"

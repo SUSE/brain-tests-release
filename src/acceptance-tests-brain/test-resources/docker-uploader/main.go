@@ -231,7 +231,6 @@ func uploadBlob(registry, name string) (string, error) {
 	}
 
 	for resp.StatusCode == http.StatusAccepted {
-		//
 		defer resp.Body.Close()
 		_, err := ioutil.ReadAll(resp.Body)
 
@@ -250,7 +249,7 @@ func uploadBlob(registry, name string) (string, error) {
 		query.Add("digest", "sha256:"+digest)
 		newURL.RawQuery = query.Encode()
 		newreq, err := http.NewRequest(http.MethodPut, newURL.String(), file)
-		// file = io.Reader - body.
+		// The last argument is the request body to upload.
 		if err != nil {
 			return "", err
 		}
