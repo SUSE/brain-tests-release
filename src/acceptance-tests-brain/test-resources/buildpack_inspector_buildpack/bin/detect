@@ -24,6 +24,10 @@ report() {
     echo "### Buildpack cache detection: ERROR: found cached dependencies in ${buildpack}"
     if test -d "${buildpack}/resources/cache"
     then
+	# The java buildpack is unlike all the others, i.e. no
+	# manifest.yml file, different place for online dependencies,
+	# etc. Thus it requires special-case detection, which is based
+	# on its custom place for dependencies.
 	language="language: java"
     else
 	language="$(grep language ${buildpack}/manifest.yml)"

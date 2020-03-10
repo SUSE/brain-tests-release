@@ -13,7 +13,6 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
-	"net/http/httptrace"
 	"net/url"
 	"os"
 	"strconv"
@@ -44,23 +43,17 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("Ping!"))
-
-		fmt.Printf("Done Handling %s\n", r.Method)
 		return
 	}
 	if r.Method != http.MethodPost {
 		w.Header().Set("Allow", strings.Join([]string{http.MethodGet, http.MethodPost}, ", "))
 		w.WriteHeader(http.StatusMethodNotAllowed)
-
-		fmt.Printf("Done Handling Disallowed %s\n", r.Method)
 		return
 	}
 	registry := r.FormValue("registry")
 	if registry == "" {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("Required parameter `registry` not specified"))
-
-		fmt.Printf("Done Handling %s Without Required Parameter `registry`\n", r.Method)
 		return
 	}
 
@@ -81,8 +74,6 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("Error uploading executable: %s\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(fmt.Sprintf("Error uploading executable: %s", err)))
-
-		fmt.Printf("Done Handling %s With Error\n", r.Method)
 		return
 	}
 	if layerDigest == "" {
@@ -201,57 +192,9 @@ func makeLayer() (resultFile *os.File, err error) {
 	return outFile, nil
 }
 
-func trace (req *http.Request) *http.Request {
-	trace := &httptrace.ClientTrace{
-		DNSStart: func(dnsInfo httptrace.DNSStartInfo) {
-			fmt.Printf("XXX DNS Start, Info: %+v\n", dnsInfo)
-		},
-		DNSDone: func(dnsInfo httptrace.DNSDoneInfo) {
-			fmt.Printf("XXX DNS Done,  Info: %+v\n", dnsInfo)
-		},
-		GetConn: func(hostPort string) {
-			fmt.Printf("XXX Get Conn: %s\n", hostPort)
-		},
-		GotConn: func(connInfo httptrace.GotConnInfo) {
-			fmt.Printf("Got Conn: %+v\n", connInfo)
-		},
-		GotFirstResponseByte: func() {
-			fmt.Printf("XXX First Response Byte\n")
-		},
-		ConnectStart: func(network, addr string) {
-			fmt.Printf("XXX Connect Start On %s for %s\n", network, addr)
-		},
-		ConnectDone: func(network, addr string, err error) {
-			fmt.Printf("Connect Done On %s for %s: %v\n", network, addr, err)
-		},
-		TLSHandshakeStart: func() {
-			fmt.Printf("XXX TLS Handshake Start\n")
-		},
-		TLSHandshakeDone: func(conn tls.ConnectionState, err error) {
-			if err != nil {
-				fmt.Printf("XXX TLS Handshake Done With Error %v\n", err)
-			} else {
-				fmt.Printf("XXX TLS Handshake Done With Conn %v\n", conn)
-			}
-		},
-		WroteHeaderField: func(key string, value []string) {
-			fmt.Printf("XXX >> Header '%s' : %v\n", key, value)
-		},
-		WroteHeaders: func() {
-			fmt.Printf("XXX >> Headers Done\n")
-		},
-		WroteRequest: func(ri httptrace.WroteRequestInfo) {
-			fmt.Printf("XXX Wrote ReqInfo: %v\n", ri)
-		},
-	}
-	req = req.WithContext(httptrace.WithClientTrace(req.Context(), trace))
-	return req
-}
 
 // uploadBlob uploads the tar file blob, returning the layer signature
 func uploadBlob(registry, name string) (string, error) {
-	fmt.Printf("Uploading\n")
-
 	file, err := makeLayer()
 	if err != nil {
 		fmt.Printf("makeLayer Error\n")
@@ -261,40 +204,29 @@ func uploadBlob(registry, name string) (string, error) {
 
 	hasher := sha256.New()
 	if _, err := io.Copy(hasher, file); err != nil {
-		fmt.Printf("Hasher error\n")
 		return "", err
 	}
 	digest := fmt.Sprintf("%x", hasher.Sum(nil))
 	fileLength, err := file.Seek(0, os.SEEK_CUR)
 	if err != nil {
-		fmt.Printf("Seek (tell) error\n")
 		return "", err
 	}
 	if _, err := file.Seek(0, os.SEEK_SET); err != nil {
-		fmt.Printf("Seek (rewind) error\n")
 		return "", err
 	}
 
 	uploadURL := fmt.Sprintf("%s/v2/%s/blobs/uploads/?digest=sha256:%s", registry, name, digest)
 	req, err := http.NewRequest(http.MethodPost, uploadURL, file)
 	if err != nil {
-		fmt.Printf("NewRequest error\n")
 		return "", err
 	}
-
-	fmt.Printf("Post Upload to %s\n", uploadURL)
-	fmt.Printf("     Upload #B %d\n", fileLength)
 
 	req.Close = true
 	req.Header.Set("Content-Length", fmt.Sprintf("%d", fileLength))
 	req.Header.Set("Content-Type", "application/octet-stream")
-	resp, err := http.DefaultClient.Do(trace(req))
-
-	fmt.Printf("Client Resp  %v\n", resp)
-	fmt.Printf("Client Err?  %v\n", err)
+	resp, err := http.DefaultClient.Do(req)
 
 	if err != nil {
-		fmt.Printf("Do in error\n")
 		return "", err
 	}
 
@@ -307,15 +239,11 @@ func uploadBlob(registry, name string) (string, error) {
 		// The last upload closed the file; reopen it
 		file, err = os.Open(file.Name())
 		if err != nil {
-			fmt.Printf("Open error\n")
 			return "", err
 		}
 
-		fmt.Printf("    XX FILE %v\n", file)
-
 		newURL, err := url.Parse(resp.Header.Get("Location"))
 		if err != nil {
-			fmt.Printf("Url parse error\n")
 			return "", err
 		}
 		query := newURL.Query()
@@ -324,34 +252,21 @@ func uploadBlob(registry, name string) (string, error) {
 		newreq, err := http.NewRequest(http.MethodPut, newURL.String(), file)
 		// file = io.Reader - body.
 		if err != nil {
-			fmt.Printf("NewRequest error\n")
 			return "", err
 		}
-
-		fmt.Printf("Put Upload to %s\n", newURL.String())
-		fmt.Printf("    Upload #B %d\n", fileLength)
 
 		newreq.Close = true
 		newreq.Header.Set("Content-Length", fmt.Sprintf("%d", fileLength))
 		newreq.Header.Set("Content-Type", "application/octet-stream")
 
-		fmt.Printf("    Request %v\n", newreq)
-
-		newresp, err := http.DefaultClient.Do(trace(newreq))
-
-		fmt.Printf("Client Resp  %v\n", newresp)
-		fmt.Printf("Client Err?  %v\n", err)
+		newresp, err := http.DefaultClient.Do(newreq)
 
 		if err != nil {
-			fmt.Printf("Do in error\n")
 			return "", err
 		}
 
-		fmt.Printf("Iterate\n")
 		resp = newresp
 	}
-
-	fmt.Printf("Loop done\n")
 
 	switch resp.StatusCode {
 	case http.StatusCreated:

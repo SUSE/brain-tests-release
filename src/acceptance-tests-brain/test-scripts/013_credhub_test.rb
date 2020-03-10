@@ -10,8 +10,8 @@ CH_SERVICE = "https://credhub.#{ENV['CF_DOMAIN']}"
 
 # Check if credhub is running, otherwise skip the test.  We do not
 # break on the first failure, but check a bit more, in case it was a
-# transient issue with the endpoint. We do accept sucess immediately,
-# tough.
+# transient issue with the endpoint. We do accept success immediately,
+# though.
 
 # Initialize status outside of loop block to be able to check after loop ends.
 status = run_with_status('true');
