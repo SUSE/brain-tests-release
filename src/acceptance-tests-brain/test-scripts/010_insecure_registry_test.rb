@@ -101,11 +101,11 @@ Timeout::timeout(ENV.fetch('TESTBRAIN_TIMEOUT', '600').to_i - 60) do
     puts "wait for registry to be available ......................................... #{regname}"
     # Wait for the registry to be available
     run_with_retry 60, 1 do
-      run "curl -kv #{registry_url}/v2/"
+      run "curl --fail -kv #{registry_url}/v2/"
     end
   end
   run_with_retry 60, 1 do
-    run "curl -kv http://uploader.#{ENV['CF_DOMAIN']}"
+    run "curl --fail -kv http://uploader.#{ENV['CF_DOMAIN']}"
   end
 
   REGISTRIES.each_pair do |regname, registry_url|
