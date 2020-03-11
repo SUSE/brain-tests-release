@@ -34,8 +34,8 @@ run "cf map-route #{app_name} #{CF_TCP_DOMAIN} --random-port | tee #{tempdir}/lo
 # retrieve the assigned random port
 port = File.read("#{tempdir}/log").split(':')[1].split.first
 if port.empty?
-  STDERR.puts "ERROR: Could not determine the assigned random port number"
-  STDERR.puts "ERROR: Mapping route to random port failed"
+  puts "#{c_red}ERROR: Could not determine the assigned random port number#{c_reset}"
+  puts "#{c_red}ERROR: Mapping route to random port failed#{c_reset}"
   exit 1
 end
 

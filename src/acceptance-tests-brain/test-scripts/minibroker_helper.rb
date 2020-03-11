@@ -95,7 +95,7 @@ class MiniBrokerTest
                         run "kubectl get pods --namespace #{minibroker_namespace}"
                         run "kubectl get pods --namespace #{minibroker_namespace} -o yaml"
                     end
-                    run "helm delete --purge #{helm_release}"
+                    run "helm delete #{helm_release}"
                     run "kubectl delete ClusterRoleBinding minibroker"
 
                     # Delete the Minibroker underlying resources namespace.
@@ -107,7 +107,6 @@ class MiniBrokerTest
             end
 
             run "kubectl get namespace #{minibroker_namespace} 2> /dev/null || kubectl create namespace #{minibroker_namespace}"
-            run "helm init --client-only"
             run(*%W(helm upgrade #{helm_release} minibroker
                 --install
                 --wait

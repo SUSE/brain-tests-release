@@ -10,6 +10,12 @@ require 'yaml'
 
 use_global_timeout
 
+puts "#{c_bold}Test disabled.#{c_reset}"
+puts "#{c_bold}Depends on CAP-1293#{c_reset} to enable NFS persi support."
+puts "See also #{c_bold}https://github.com/cloudfoundry-incubator/kubecf/issues/382#{c_reset}."
+puts "#{c_bold}Cannot pass#{c_reset} before that is done.'"
+exit_skipping_test
+
 login
 setup_org_space
 
@@ -57,7 +63,7 @@ end
 raise "No storage class available" if storage_class.empty?
 provisioner = capture("kubectl get storageclass #{storage_class} -o jsonpath={.provisioner}")
 if provisioner.downcase.include? 'nfs'
-    STDERR.puts "Skipping NFS-Persi test due to storage class using NFS"
+    puts "Skipping NFS-Persi test due to storage class using NFS"
     exit_skipping_test
 end
 

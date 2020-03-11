@@ -5,8 +5,8 @@ shared: &shared
   command: ./bin/registry serve ./config.yml
   env: &env
     REGISTRY_HTTP_ADDR: :8080
-    REGISTRY_LOG_ACCESSLOG_DISABLED: true
-    REGISTRY_LOG_LEVEL: error
+    REGISTRY_LOG_ACCESSLOG_DISABLED: false
+    REGISTRY_LOG_LEVEL: debug
   health-check-type: port
 
 applications:
@@ -34,5 +34,11 @@ applications:
 
 - name: uploader
   buildpack: binary_buildpack
+  env:
+    # Force golang's net/http to not use the Http/2 protocol, and stay
+    # with Http/1. This is done because Http/2 apparently has some
+    # very deeply buried race condition which can block the upload of
+    # the image. These blocks are not happening for Http/1 so far.
+    GODEBUG: http2client=0
   command:
     ./bin/docker-uploader

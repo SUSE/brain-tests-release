@@ -192,10 +192,12 @@ func makeLayer() (resultFile *os.File, err error) {
 	return outFile, nil
 }
 
+
 // uploadBlob uploads the tar file blob, returning the layer signature
 func uploadBlob(registry, name string) (string, error) {
 	file, err := makeLayer()
 	if err != nil {
+		fmt.Printf("makeLayer Error\n")
 		return "", err
 	}
 	defer os.Remove(file.Name())
@@ -218,20 +220,27 @@ func uploadBlob(registry, name string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
+	req.Close = true
 	req.Header.Set("Content-Length", fmt.Sprintf("%d", fileLength))
 	req.Header.Set("Content-Type", "application/octet-stream")
 	resp, err := http.DefaultClient.Do(req)
+
 	if err != nil {
 		return "", err
 	}
 
 	for resp.StatusCode == http.StatusAccepted {
+		defer resp.Body.Close()
+		_, err := ioutil.ReadAll(resp.Body)
+
 		fmt.Printf("Got `%s` even though we wanted one-stop upload, retrying\n", resp.Status)
 		// The last upload closed the file; reopen it
 		file, err = os.Open(file.Name())
 		if err != nil {
 			return "", err
 		}
+
 		newURL, err := url.Parse(resp.Header.Get("Location"))
 		if err != nil {
 			return "", err
@@ -239,16 +248,23 @@ func uploadBlob(registry, name string) (string, error) {
 		query := newURL.Query()
 		query.Add("digest", "sha256:"+digest)
 		newURL.RawQuery = query.Encode()
-		req, err = http.NewRequest(http.MethodPut, newURL.String(), file)
+		newreq, err := http.NewRequest(http.MethodPut, newURL.String(), file)
+		// The last argument is the request body to upload.
 		if err != nil {
 			return "", err
 		}
-		req.Header.Set("Content-Length", fmt.Sprintf("%d", fileLength))
-		req.Header.Set("Content-Type", "application/octet-stream")
-		resp, err = http.DefaultClient.Do(req)
+
+		newreq.Close = true
+		newreq.Header.Set("Content-Length", fmt.Sprintf("%d", fileLength))
+		newreq.Header.Set("Content-Type", "application/octet-stream")
+
+		newresp, err := http.DefaultClient.Do(newreq)
+
 		if err != nil {
 			return "", err
 		}
+
+		resp = newresp
 	}
 
 	switch resp.StatusCode {
@@ -328,6 +344,8 @@ func buildManifest(name, tag, layerDigest string) (io.Reader, error) {
 
 // uploadManifest uploads the docker image manifest to a docker registry
 func uploadManifest(registry, name, tag, layerDigest string) error {
+	fmt.Printf("Upload manifest to %s (%s:%s): %s\n", registry, name, tag, layerDigest)
+
 	manifest, err := buildManifest(name, tag, layerDigest)
 	if err != nil {
 		return err
@@ -346,5 +364,9 @@ func uploadManifest(registry, name, tag, layerDigest string) error {
 	fmt.Printf("\n")
 	io.Copy(os.Stdout, resp.Body)
 	fmt.Printf("\n")
+
+	if resp.StatusCode < 200 || resp.StatusCode > 299 {
+		return fmt.Errorf("Registry error: %s", resp.Status)
+	}
 	return nil
 }

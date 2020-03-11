@@ -16,3 +16,9 @@ health:
     enabled: true
     interval: 10s
     threshold: 3
+compatibility:
+  schema1:
+    enabled: true
+# Our docker-uploader helper application uses schem version 1 for its
+# manifests. Telling the registry to still accept that format is simpler
+# than rewriting the application to generate v2.
