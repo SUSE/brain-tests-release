@@ -1,5 +1,13 @@
 #!/usr/bin/env ruby
 
+require_relative 'testutils'
+
+puts "Minibroker #{c_bold}Test disabled#{c_reset}."
+puts "Have to set #{c_bold}KUBERNETES_REPO#{c_reset} dynamically per kube version."
+puts "Have to export this variable as spec which can be set from the chart, and templated."
+puts "#{c_bold}Cannot pass#{c_reset} on all platforms before that is done.'"
+exit_skipping_test
+
 require_relative 'minibroker_helper'
 
 $DB_NAME = random_suffix('db')
