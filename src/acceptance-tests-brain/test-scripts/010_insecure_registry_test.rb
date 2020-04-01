@@ -92,7 +92,10 @@ Timeout::timeout(ENV.fetch('TESTBRAIN_TIMEOUT', '600').to_i - 60) do
     }
   end
 
-  threads.each { |th| th.abort_on_exception = true }
+  threads.each { |th|
+    puts "#{c_bold}Thread #{th}#{c_reset}: abort-on-exception true"
+    th.abort_on_exception = true
+  }
 
   # Wait a bit to have the log tailer thread start properly and settle before doing more.
   sleep 5
@@ -153,6 +156,14 @@ Timeout::timeout(ENV.fetch('TESTBRAIN_TIMEOUT', '600').to_i - 60) do
 
   puts "..........................................................................."
   raise caught_error if caught_error
+  puts "#{c_bold}OK#{c_reset}"
 ensure
-  threads.each { |th| Thread.kill(th) }
+  puts "#{c_bold}Terminating threads#{c_reset}"
+  threads.each { |th|
+    puts "#{c_bold}Thread #{th}#{c_reset}: kill"
+    Thread.kill(th)
+    puts "#{c_bold}Thread #{th}#{c_reset}: killed"
+  }
+  puts "#{c_bold}ensured#{c_reset}"
 end
+puts "#{c_bold}DONE#{c_reset}"
