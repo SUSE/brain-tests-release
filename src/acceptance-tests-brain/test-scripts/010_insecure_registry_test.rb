@@ -33,7 +33,7 @@ Timeout::timeout(ENV.fetch('TESTBRAIN_TIMEOUT', '600').to_i - 60) do
   # See ticket https://github.com/cloudfoundry-incubator/kubecf/issues/466
   # Also see   https://github.com/cloudfoundry-incubator/kubecf/issues/424
   REGISTRIES = {
-    'insecure-registry' => "https://insecure-registry.#{CF_TCP_DOMAIN}:20005"     # Self-signed SSL cert
+    'insecure-registry' => "https://#{CF_TCP_DOMAIN}:20005"     # Self-signed SSL cert
   }
 
   at_exit do
@@ -69,9 +69,10 @@ Timeout::timeout(ENV.fetch('TESTBRAIN_TIMEOUT', '600').to_i - 60) do
   at_exit do
     set errexit: false do
       puts "........................................................................... SHUTDOWN"
-      run "cf delete -f secure-registry"
-      run "cf delete -f insecure-registry"
-      run "cf delete -f uploader"
+      %w(secure-registry insecure-registry uploader).each do |app|
+        run "cf logs --recent #{app}"
+        run "cf delete -f #{app}"
+      end
     end
   end
   run "cf push -f manifest.yml --var tcp-domain=#{CF_TCP_DOMAIN}",
