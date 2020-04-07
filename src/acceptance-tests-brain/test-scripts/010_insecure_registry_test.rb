@@ -4,7 +4,6 @@ require_relative 'testutils'
 require 'fileutils'
 require 'json'
 
-threads = []
 Timeout::timeout(ENV.fetch('TESTBRAIN_TIMEOUT', '600').to_i - 60) do
   # the timeout stuff isn't necessary, it just gives it time to clean up
 
@@ -80,21 +79,6 @@ Timeout::timeout(ENV.fetch('TESTBRAIN_TIMEOUT', '600').to_i - 60) do
 
   run 'cf apps'
 
-  # With the apps running, now watch (tail) all their logs. (Dumped into helper files)
-  # Whenever needed we simply cat the relevant logs into the test output.
-
-  threads << Thread.new{
-    run "cf logs uploader > #{tmpdir}/app-uploader.log"
-  }
-
-  REGISTRIES.each_pair do |regname, registry_url|
-    threads << Thread.new{
-      run "cf logs #{regname} > #{tmpdir}/app-#{regname}.log"
-    }
-  end
-
-  threads.each { |th| th.abort_on_exception = true }
-
   # Wait a bit to have the log tailer thread start properly and settle before doing more.
   sleep 5
 
@@ -117,16 +101,14 @@ Timeout::timeout(ENV.fetch('TESTBRAIN_TIMEOUT', '600').to_i - 60) do
       set errexit: false do
         puts "upload uploader ........................................................... #{regname} FAIL"
         run 'cf apps'
-        # Wait a bit for the log tailers to flush stuff
-        sleep 5
-        run "cat #{tmpdir}/app-uploader.log   | sed -e 's/^/UPLOADER: /'"
-        run "cat #{tmpdir}/app-#{regname}.log | sed -e 's/^/#{regname}: /'"
+        run "cf logs --recent uploader   | sed -e 's/^/UPLOADER: /'"
+        run "cf logs --recent #{regname} | sed -e 's/^/#{regname}: /'"
       end
       raise
     end
     # Wait a bit for the log tailers to flush stuff
     sleep 5
-    run "cat #{tmpdir}/app-uploader.log | sed -e 's/^/UPLOADER: /'"
+    run "cf logs --recent uploader | sed -e 's/^/UPLOADER: /'"
   end
 
   caught_error = nil
@@ -140,10 +122,8 @@ Timeout::timeout(ENV.fetch('TESTBRAIN_TIMEOUT', '600').to_i - 60) do
       caught_error = e
       set errexit: false do
         run "cf logs --recent from-#{regname}"
-        # Wait a bit for the log tailers to flush stuff
-        sleep 5
-        run "cat #{tmpdir}/app-uploader.log   | sed -e 's/^/UPLOADER: /'"
-        run "cat #{tmpdir}/app-#{regname}.log | sed -e 's/^/#{regname}: /'"
+        run "cf logs --recent uploader   | sed -e 's/^/UPLOADER: /'"
+        run "cf logs --recent #{regname} | sed -e 's/^/#{regname}: /'"
       end
     ensure
       set errexit: false do
@@ -154,6 +134,4 @@ Timeout::timeout(ENV.fetch('TESTBRAIN_TIMEOUT', '600').to_i - 60) do
 
   puts "..........................................................................."
   raise caught_error if caught_error
-ensure
-  threads.each { |th| Thread.kill(th) }
 end
