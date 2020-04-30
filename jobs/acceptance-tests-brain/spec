@@ -82,3 +82,40 @@ properties:
       to your CF instance; this is generally always true for BOSH-Lite
       deployments of CF.
     default: false
+
+  tests.cflogin.enabled:
+    default: true
+  tests.pushapp.enabled:
+    default: true
+  tests.securitygroups.enabled:
+    default: true
+  tests.dockerapp.enabled:
+    default: true
+  tests.tcprouting.enabled:
+    default: true
+  tests.metron.enabled:
+    default: true
+  tests.ssh.enabled:
+    default: true
+  tests.buildpacks.enabled:
+    default: true
+  tests.backup.enabled:
+    default: true
+  tests.insecure_registry.enabled:
+    default: true
+  tests.nfspersi.enabled:
+    default: true
+  tests.minibroker.redis.enabled:
+    default: true
+  tests.minibroker.mariadb.enabled:
+    default: true
+  tests.minibroker.postgres.enabled:
+    default: true
+  tests.minibroker.mongodb.enabled:
+    default: true
+  tests.credhub.enabled:
+    default: true
+  tests.syslog_forwarding.enabled:
+    default: true
+  tests.autoscaler.enabled:
+    default: true
