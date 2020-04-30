@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+exit_skipping_test if ENV['MINIBROKER_REDIS_ENABLED'] != 'true'
+
 require_relative 'testutils'
 
 puts "Minibroker #{c_bold}Test disabled#{c_reset}."

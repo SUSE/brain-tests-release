@@ -1,4 +1,7 @@
 #!/usr/bin/env ruby
+
+exit_skipping_test if ENV['AUTOSCALER_ENABLED'] != 'true'
+
 require_relative 'testutils'
 
 # Origin of the various pieces of configuration.
@@ -8,35 +11,6 @@ require_relative 'testutils'
 APPS_DOMAIN   = ENV['APPS_DOMAIN']
 AUTOSCALER_URL   = ENV['AUTOSCALER_URL']
 NAMESPACE     = ENV['KUBERNETES_NAMESPACE']
-
-STATEFULSETS = [ 'autoscaler-api',
-                 'autoscaler-actors',
-                 'autoscaler-metrics',
-                 'autoscaler-postgres']
-
-# ~ ~~ ~~~ ~~~~~ ~~~~~~~~ ~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~~~~~~~
-## Check if autoscaler pods are running.
-
-active_autoscaler_pods = 0
-STATEFULSETS.each do |name|
-  if statefulset_ready(NAMESPACE, name)
-    active_autoscaler_pods += 1
-  else
-    puts "#{c_red}Reqired autoscaler pod #{c_bold}#{name}#{c_red} is not active.#{c_reset}"
-  end
-end
-
-# Skip the test if none of the autoscaler pods are running.
-puts "#{c_red}Autoscaler inactive.#{c_reset}" if active_autoscaler_pods == 0
-exit_skipping_test if active_autoscaler_pods == 0
-
-# Fail the test if some, but not all of the autoscaler pods are
-# running.
-fail "Have only #{active_autoscaler_pods} active autoscaler pods out of #{STATEFULSETS.length} required." \
-  if active_autoscaler_pods < STATEFULSETS.length
-
-puts "Autoscaler active. Testing begins."
-STDOUT.flush
 
 # ~ ~~ ~~~ ~~~~~ ~~~~~~~~ ~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~~~~~~~
 ## Standard cf cli access.

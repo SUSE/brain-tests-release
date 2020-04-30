@@ -27,6 +27,8 @@
 #
 #    See (C).
 
+exit_skipping_test if ENV['SYSLOG_FORWARDING_ENABLED'] != 'true'
+
 require_relative 'testutils'
 require 'json'
 require 'securerandom'

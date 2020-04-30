@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+exit_skipping_test if ENV['INSECURE_REGISTRY_ENABLED'] != 'true'
+
 require_relative 'testutils'
 require 'fileutils'
 require 'json'

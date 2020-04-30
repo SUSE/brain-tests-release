@@ -18,6 +18,25 @@ if_p('acceptance_tests_brain.credhub_client') do |client|
 end
 %>
 
+export CFLOGIN_ENABLED="<%= p('tests.cflogin.enabled') %>"
+export PUSHAPP_ENABLED="<%= p('tests.pushapp.enabled') %>"
+export SECURITYGROUPS_ENABLED="<%= p('tests.securitygroups.enabled') %>"
+export DOCKERAPP_ENABLED="<%= p('tests.dockerapp.enabled') %>"
+export TCPROUTING_ENABLED="<%= p('tests.tcprouting.enabled') %>"
+export METRON_ENABLED="<%= p('tests.metron.enabled') %>"
+export SSH_ENABLED="<%= p('tests.ssh.enabled') %>"
+export BUILDPACKS_ENABLED="<%= p('tests.buildpacks.enabled') %>"
+export BACKUP_ENABLED="<%= p('tests.backup.enabled') %>"
+export INSECURE_REGISTRY_ENABLED="<%= p('tests.insecure_registry.enabled') %>"
+export NFSPERSI_ENABLED="<%= p('tests.nfspersi.enabled') %>"
+export MINIBROKER_REDIS_ENABLED="<%= p('tests.minibroker.redis.enabled') %>"
+export MINIBROKER_MARIADB_ENABLED="<%= p('tests.minibroker.mariadb.enabled') %>"
+export MINIBROKER_POSTGRES_ENABLED="<%= p('tests.minibroker.postgres.enabled') %>"
+export MINIBROKER_MONGODB_ENABLED="<%= p('tests.minibroker.mongodb.enabled') %>"
+export CREDHUB_ENABLED="<%= p('tests.credhub.enabled') %>"
+export SYSLOG_FORWARDING_ENABLED="<%= p('tests.syslog_forwarding.enabled') %>"
+export AUTOSCALER_ENABLED="<%= p('tests.autoscaler.enabled') %>"
+
 # Autoscaler settings
 export APPS_DOMAIN="<%= Array(properties.smoke_tests.apps_domain).first %>"
 export AUTOSCALER_URL="<%= p('smoke_tests.autoscaler_endpoint') %>"
