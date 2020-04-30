@@ -4,15 +4,15 @@ name: acceptance-tests-brain
 description: This job will run the testbrain CLI, running all acceptance test scripts in src/testbrain/test-scripts
 
 packages:
-  - cli
-  - kubectl
-  - helm
-  - acceptance-tests-brain
-  - acceptance-tests
-  - docker-distribution
-  - credhub-cli
-  - mariadb-client
-  - ruby-2.6.5-r0.26.0
+- cli
+- kubectl
+- helm
+- acceptance-tests-brain
+- acceptance-tests
+- docker-distribution
+- credhub-cli
+- mariadb-client
+- ruby-2.6.5-r0.26.0
 
 templates:
   run.erb: bin/run
