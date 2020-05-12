@@ -105,6 +105,12 @@ properties:
     default: true
   tests.nfspersi.enabled:
     default: true
+  tests.minibroker.charts.minibroker_repository:
+    default: https://minibroker-helm-charts.s3.amazonaws.com/minibroker-charts/
+    description: The chart repository the tests should use to install Minibroker.
+  tests.minibroker.charts.kubernetes_repository:
+    default: https://minibroker-helm-charts.s3.amazonaws.com/kubernetes-charts/
+    description: The chart repository Minibroker should use to install the charts.
   tests.minibroker.redis.enabled:
     default: true
   tests.minibroker.mariadb.enabled:

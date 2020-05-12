@@ -37,6 +37,10 @@ export CREDHUB_ENABLED="<%= p('tests.credhub.enabled') %>"
 export SYSLOG_FORWARDING_ENABLED="<%= p('tests.syslog_forwarding.enabled') %>"
 export AUTOSCALER_ENABLED="<%= p('tests.autoscaler.enabled') %>"
 
-# Autoscaler settings
+# Autoscaler settings.
 export APPS_DOMAIN="<%= Array(properties.smoke_tests.apps_domain).first %>"
 export AUTOSCALER_URL="<%= p('smoke_tests.autoscaler_endpoint') %>"
+
+# Minibroker settings.
+export MINIBROKER_REPO="<%= p('tests.minibroker.charts.minibroker_repository') %>"
+export KUBERNETES_REPO="<%= p('tests.minibroker.charts.kubernetes_repository') %>"
