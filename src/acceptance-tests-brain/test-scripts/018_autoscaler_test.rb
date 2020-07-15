@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
 
-exit_skipping_test if ENV['AUTOSCALER_ENABLED'] != 'true'
-
 require_relative 'testutils'
+
+exit_skipping_test if ENV['AUTOSCALER_ENABLED'] != 'true'
 
 # Origin of the various pieces of configuration.
 ##
