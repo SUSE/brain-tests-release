@@ -1,9 +1,9 @@
 #!/usr/bin/env ruby
 
-exit_skipping_test if ENV['MINIBROKER_POSTGRES_ENABLED'] != 'true'
-
 require_relative 'testutils'
 require_relative 'minibroker_helper'
+
+exit_skipping_test if ENV['MINIBROKER_POSTGRES_ENABLED'] != 'true'
 
 $DB_NAME = random_suffix('db')
 

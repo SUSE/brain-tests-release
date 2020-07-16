@@ -27,12 +27,13 @@
 #
 #    See (C).
 
-exit_skipping_test if ENV['SYSLOG_FORWARDING_ENABLED'] != 'true'
-
-require_relative 'testutils'
 require 'json'
 require 'securerandom'
 require 'timeout'
+
+require_relative 'testutils'
+
+exit_skipping_test if ENV['SYSLOG_FORWARDING_ENABLED'] != 'true'
 
 def show_env
     ENV.sort.select { |k, v| k.start_with? 'KUBECF_LOG_' }.each do |k, v|

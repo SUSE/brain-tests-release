@@ -1,14 +1,14 @@
 #!/usr/bin/env ruby
 
-exit_skipping_test if ENV['CREDHUB_ENABLED'] != 'true'
-
-# Skip the test if we do not have credhub auth set up
-exit_skipping_test unless ENV['CREDHUB_CLIENT'] && ENV['CREDHUB_SECRET']
-
 require 'base64'
 require 'json'
 
 require_relative 'testutils'
+
+exit_skipping_test if ENV['CREDHUB_ENABLED'] != 'true'
+
+# Skip the test if we do not have credhub auth set up
+exit_skipping_test unless ENV['CREDHUB_CLIENT'] && ENV['CREDHUB_SECRET']
 
 CH_CLI = 'credhub'
 CH_SERVICE = "https://credhub.#{ENV['CF_DOMAIN']}"

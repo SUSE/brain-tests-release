@@ -1,9 +1,9 @@
 #!/usr/bin/env ruby
 
-exit_skipping_test if ENV['MINIBROKER_MONGODB_ENABLED'] != 'true'
-
 require_relative 'testutils'
 require_relative 'minibroker_helper'
+
+exit_skipping_test if ENV['MINIBROKER_MONGODB_ENABLED'] != 'true'
 
 tester = MiniBrokerTest.new('mongodb', '27017')
 tester.service_params = {

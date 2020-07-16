@@ -1,10 +1,10 @@
 #!/usr/bin/env ruby
 
-exit_skipping_test if ENV['BUILDPACKS_ENABLED'] != 'true'
+require 'json'
 
 require_relative 'testutils'
 
-require 'json'
+exit_skipping_test if ENV['BUILDPACKS_ENABLED'] != 'true'
 
 login
 setup_org_space

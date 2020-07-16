@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
 
-exit_skipping_test if ENV['DOCKERAPP_ENABLED'] != 'true'
-
 require_relative 'testutils'
+
+exit_skipping_test if ENV['DOCKERAPP_ENABLED'] != 'true'
 
 login
 setup_org_space

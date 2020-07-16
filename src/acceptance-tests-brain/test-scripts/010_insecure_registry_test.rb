@@ -1,10 +1,11 @@
 #!/usr/bin/env ruby
 
-exit_skipping_test if ENV['INSECURE_REGISTRY_ENABLED'] != 'true'
-
-require_relative 'testutils'
 require 'fileutils'
 require 'json'
+
+require_relative 'testutils'
+
+exit_skipping_test if ENV['INSECURE_REGISTRY_ENABLED'] != 'true'
 
 Timeout::timeout(ENV.fetch('TESTBRAIN_TIMEOUT', '600').to_i - 60) do
   # the timeout stuff isn't necessary, it just gives it time to clean up
