@@ -21,9 +21,14 @@ def storage_class
     return $storage_class if $storage_class && !$storage_class.empty?
     storage_classes = JSON.parse(capture('kubectl get storageclass --output=json'))
     default_storage_class = storage_classes['items'].find do |storage_class|
-        storage_class.fetch('metadata', {})
-            .fetch('annotations', {})
-            .fetch('storageclass.kubernetes.io/is-default-class', 'false') == 'true'
+        metadata = storage_class['metadata'] || {}
+        annotations = metadata['annotations'] || {}
+        %w(
+            storageclass.kubernetes.io/is-default-class
+            storageclass.beta.kubernetes.io/is-default-class
+        ).any? do |key|
+            annotations[key] == 'true'
+        end
     end
     $storage_class = default_storage_class['metadata']['name'] || 'persistent'
 end

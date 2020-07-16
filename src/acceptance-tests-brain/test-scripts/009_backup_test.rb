@@ -1,9 +1,10 @@
 #!/usr/bin/env ruby
 
-exit_skipping_test if ENV['BACKUP_ENABLED'] != 'true'
+require 'json'
 
 require_relative 'testutils'
-require 'json'
+
+exit_skipping_test if ENV['BACKUP_ENABLED'] != 'true'
 
 login
 setup_org_space

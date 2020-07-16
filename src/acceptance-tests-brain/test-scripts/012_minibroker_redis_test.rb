@@ -1,9 +1,9 @@
 #!/usr/bin/env ruby
 
-exit_skipping_test if ENV['MINIBROKER_REDIS_ENABLED'] != 'true'
-
 require_relative 'testutils'
 require_relative 'minibroker_helper'
+
+exit_skipping_test if ENV['MINIBROKER_REDIS_ENABLED'] != 'true'
 
 tester = MiniBrokerTest.new('redis', '6379')
 tester.service_params = {

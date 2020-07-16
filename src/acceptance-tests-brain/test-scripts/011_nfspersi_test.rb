@@ -4,11 +4,12 @@
 # This tests assumes that the kernel modules `nfs` and `nfsd` are
 # already loaded.
 
-exit_skipping_test if ENV['NFSPERSI_ENABLED'] != 'true'
-
-require_relative 'testutils'
 require 'json'
 require 'yaml'
+
+require_relative 'testutils'
+
+exit_skipping_test if ENV['NFSPERSI_ENABLED'] != 'true'
 
 use_global_timeout
 
