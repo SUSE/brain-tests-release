@@ -1,9 +1,6 @@
 [submodule "src/acceptance-tests-brain/test-resources/rails-example"]
 	path = src/acceptance-tests-brain/test-resources/rails-example
 	url = https://github.com/scf-samples/rails-example.git
-[submodule "src/acceptance-tests-brain/test-resources/python-mongodb-blog"]
-	path = src/acceptance-tests-brain/test-resources/python-mongodb-blog
-	url = https://github.com/scf-samples/python-mongodb-blog.git
 [submodule "src/acceptance-tests-brain/test-resources/persi-acceptance-tests"]
 	path = src/acceptance-tests-brain/test-resources/persi-acceptance-tests
 	url = https://github.com/cloudfoundry/persi-acceptance-tests.git
