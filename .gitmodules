@@ -4,9 +4,6 @@
 [submodule "src/acceptance-tests-brain/test-resources/python-mongodb-blog"]
 	path = src/acceptance-tests-brain/test-resources/python-mongodb-blog
 	url = https://github.com/scf-samples/python-mongodb-blog.git
-[submodule "src/acceptance-tests-brain/test-resources/cf-redis-example-app"]
-	path = src/acceptance-tests-brain/test-resources/cf-redis-example-app
-	url = https://github.com/scf-samples/cf-redis-example-app
 [submodule "src/acceptance-tests-brain/test-resources/persi-acceptance-tests"]
 	path = src/acceptance-tests-brain/test-resources/persi-acceptance-tests
 	url = https://github.com/cloudfoundry/persi-acceptance-tests.git
