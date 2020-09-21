@@ -29,10 +29,6 @@ export BUILDPACKS_ENABLED="<%= p('tests.buildpacks.enabled') %>"
 export BACKUP_ENABLED="<%= p('tests.backup.enabled') %>"
 export INSECURE_REGISTRY_ENABLED="<%= p('tests.insecure_registry.enabled') %>"
 export NFSPERSI_ENABLED="<%= p('tests.nfspersi.enabled') %>"
-export MINIBROKER_REDIS_ENABLED="<%= p('tests.minibroker.redis.enabled') %>"
-export MINIBROKER_MARIADB_ENABLED="<%= p('tests.minibroker.mariadb.enabled') %>"
-export MINIBROKER_POSTGRES_ENABLED="<%= p('tests.minibroker.postgres.enabled') %>"
-export MINIBROKER_MONGODB_ENABLED="<%= p('tests.minibroker.mongodb.enabled') %>"
 export CREDHUB_ENABLED="<%= p('tests.credhub.enabled') %>"
 export SYSLOG_FORWARDING_ENABLED="<%= p('tests.syslog_forwarding.enabled') %>"
 export AUTOSCALER_ENABLED="<%= p('tests.autoscaler.enabled') %>"
@@ -40,7 +36,3 @@ export AUTOSCALER_ENABLED="<%= p('tests.autoscaler.enabled') %>"
 # Autoscaler settings.
 export APPS_DOMAIN="<%= Array(properties.smoke_tests.apps_domain).first %>"
 export AUTOSCALER_URL="<%= p('smoke_tests.autoscaler_endpoint') %>"
-
-# Minibroker settings.
-export MINIBROKER_REPO="<%= p('tests.minibroker.charts.minibroker_repository') %>"
-export KUBERNETES_REPO="<%= p('tests.minibroker.charts.kubernetes_repository') %>"
