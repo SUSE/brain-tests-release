@@ -10,7 +10,7 @@ cf auth ${CF_USERNAME} ${CF_PASSWORD}
 
 cf enable-feature-flag diego_docker
 
-if [ -n "$CREDHUB_CLIENT" ]; then
+if [ "$CREDHUB_ENABLED" == "true" ]; then
   credhub api --skip-tls-validation \
       https://credhub.$CF_DOMAIN
   credhub login \

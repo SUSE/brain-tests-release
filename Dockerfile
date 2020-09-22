@@ -44,13 +44,14 @@ RUN  go install github.com/docker/distribution/cmd/registry
 RUN  go install /brains/src/acceptance-tests-brain/test-resources/docker-uploader
 
 FROM $BASE_IMAGE
-RUN mkdir -p /brains
+RUN mkdir -p /brains/acceptance-tests-brain
+RUN mkdir -p /brains/cf-acceptance-tests
 RUN zypper in -y ruby mariadb-client redis
 COPY --from=build /brains/run.sh /bin/
 RUN chmod +x /bin/run.sh
 COPY --from=build /brains/bin/* /bin/
-COPY --from=build /brains/src/acceptance-tests-brain/* /brains/
-COPY --from=build /brains/src/github.com/cloudfoundry/cf-acceptance-tests /brains/
+COPY --from=build /brains/src/* /brains/acceptance-tests-brain/
+RUN mv /brains/acceptance-tests-brain/cloudfoundry/cf-acceptance-tests/ /brains/
 RUN cf install-plugin -f /bin/cf-plugin-backup
 
 ENTRYPOINT ["/bin/run.sh"]
