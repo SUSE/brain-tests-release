@@ -1,7 +1,21 @@
 #!/bin/sh
 
 set -o errexit
-set -o nounset
+
+if [ -z "${CF_DOMAIN}" ]; then
+  echo "CF_DOMAIN not defined but required"
+  exit 1
+fi
+
+if [ -z "${CF_USERNAME}" ]; then
+  echo "CF_USERNAME not defined but required"
+  exit 1
+fi
+
+if [ -z "${CF_PASSWORD}" ]; then
+  echo "CF_PASSWORD not defined but required"
+  exit 1
+fi
 
 cf api --skip-ssl-validation \
    https://api.${CF_DOMAIN}
@@ -56,4 +70,5 @@ if [ -d /tests ]; then
 fi
 
 set -x
+set -o nounset
 testbrain run ${PARAM}
