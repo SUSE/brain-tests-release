@@ -17,4 +17,4 @@ end
 run "cf push #{app_name} -p #{resource_path('node-env')}"
 
 # test if there are logs
-run "cf logs #{app_name} --recent | grep -i Downloading"
+run "cf logs #{app_name} --recent | grep -i 'Creating build for app'"
