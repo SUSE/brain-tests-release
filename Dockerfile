@@ -46,7 +46,7 @@ RUN  go install /brains/src/acceptance-tests-brain/test-resources/docker-uploade
 FROM $BASE_IMAGE
 RUN mkdir -p /brains/acceptance-tests-brain
 RUN mkdir -p /brains/cf-acceptance-tests
-RUN zypper in -y ruby mariadb-client redis
+RUN zypper in -y ruby mariadb-client redis zip unzip
 COPY --from=build /brains/run.sh /bin/
 RUN chmod +x /bin/run.sh
 COPY --from=build /brains/bin/* /bin/
