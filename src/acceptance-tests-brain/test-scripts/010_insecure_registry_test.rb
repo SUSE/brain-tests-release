@@ -59,15 +59,16 @@ Timeout::timeout(ENV.fetch('TESTBRAIN_TIMEOUT', '600').to_i - 60) do
 
   puts "deploy ...................................................................."
 
+  run "mkdir -p /docker-distribution-app/bin/"
   # Deploy the registry ... Assemble the apps for push
   FileUtils::Verbose.cp resource_path('docker-uploader/manifest.yml'),
-                        '/var/vcap/packages/docker-distribution/manifest.yml'
+                        '/docker-distribution-app/manifest.yml'
   FileUtils::Verbose.cp resource_path('docker-uploader/config.yml'),
-                        '/var/vcap/packages/docker-distribution/config.yml'
-  FileUtils::Verbose.cp '/var/vcap/packages/acceptance-tests-brain/bin/docker-uploader',
-                        '/var/vcap/packages/docker-distribution/bin/'
-  FileUtils::Verbose.cp '/var/vcap/packages/acceptance-tests-brain/bin/registry',
-                        '/var/vcap/packages/docker-distribution/bin/'
+                        '/docker-distribution-app/config.yml'
+  FileUtils::Verbose.cp '/bin/docker-uploader',
+                        '/docker-distribution-app/bin/'
+  FileUtils::Verbose.cp '/bin/registry',
+                        '/docker-distribution-app/bin/'
   at_exit do
     set errexit: false do
       puts "........................................................................... SHUTDOWN"
@@ -78,7 +79,7 @@ Timeout::timeout(ENV.fetch('TESTBRAIN_TIMEOUT', '600').to_i - 60) do
     end
   end
   run "cf push -f manifest.yml --var tcp-domain=#{CF_TCP_DOMAIN}",
-      chdir: '/var/vcap/packages/docker-distribution/'
+      chdir: '/docker-distribution-app/'
 
   run 'cf apps'
 

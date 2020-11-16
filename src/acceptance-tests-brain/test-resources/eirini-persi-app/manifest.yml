@@ -1,0 +1,7 @@
+applications:
+  - name: persitest
+    buildpack: go_buildpack
+    memory: 20M
+    disk_quota: 20M
+    env:
+       GOPACKAGENAME: eirini-persi-app
